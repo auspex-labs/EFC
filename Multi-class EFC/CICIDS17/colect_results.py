@@ -1,10 +1,11 @@
+from math import sqrt
+from statistics import mean, stdev
+
 import numpy as np
 import pandas as pd
-from statistics import mean, stdev
-from sklearn.metrics import f1_score
 from matplotlib import pyplot as plt
-from math import sqrt
 from matplotlib.legend import _get_legend_handles_labels
+from sklearn.metrics import f1_score
 
 
 def metrics_algorithms_multiclass():
@@ -31,9 +32,7 @@ def metrics_algorithms_multiclass():
         for idx, alg in enumerate(["EFC", "DT", "SVC", "MLP"]):
             f1 = []
             for sets in range(1, 6):
-                y_true = pd.read_csv(
-                    "5-fold_sets/Discretized/Sets{}/y_test".format(sets), header=None
-                ).values.astype("int")
+                y_true = pd.read_csv(f"5-fold_sets/Discretized/Sets{sets}/y_test", header=None).values.astype("int")
 
                 y_pred = np.load(
                     "5-fold_sets/Results/Sets{}/{}_predicted.npy".format(sets, alg),
@@ -43,9 +42,7 @@ def metrics_algorithms_multiclass():
                     y_pred = y_pred[0, :].astype("int")
 
                 macro_average[idx].append(f1_score(y_true, y_pred, average="macro"))
-                weighted_average[idx].append(
-                    f1_score(y_true, y_pred, average="weighted")
-                )
+                weighted_average[idx].append(f1_score(y_true, y_pred, average="weighted"))
                 f1.append(
                     f1_score(
                         y_true,
@@ -64,13 +61,9 @@ def metrics_algorithms_multiclass():
 
         print(macro_average)
         for label in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
-            file.write("\\textit{{{}}} ".format(names[label]))
+            file.write(f"\\textit{{{names[label]}}} ")
             for idx, alg in enumerate(["DT", "SVC", "MLP", "EFC"]):
-                file.write(
-                    "& {:.3f} $\\pm$ {:.3f}".format(
-                        f1_scores[idx][label], f1_scores_std[idx][label]
-                    )
-                )
+                file.write("& {:.3f} $\\pm$ {:.3f}".format(f1_scores[idx][label], f1_scores_std[idx][label]))
             file.write("\\\\ \n")
 
         file.write("\\textbf{{{}}} ".format("Macro average"))
@@ -88,8 +81,7 @@ def metrics_algorithms_multiclass():
             file.write(
                 "& {:.3f} $\\pm$ {:.3f}".format(
                     mean(weighted_average[idx]),
-                    (stdev(weighted_average[idx]) / sqrt(len(weighted_average[idx])))
-                    * 1.96,
+                    (stdev(weighted_average[idx]) / sqrt(len(weighted_average[idx]))) * 1.96,
                 )
             )
         file.write("\\\\ \n")
@@ -112,9 +104,7 @@ def plot_unknown():
     ]
     plt.rcParams.update({"font.size": 16})
 
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(
-        2, 2, sharex=True, sharey=True, figsize=(15, 9)
-    )
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex=True, sharey=True, figsize=(15, 9))
     fig.subplots_adjust(hspace=0.4, wspace=0.4)
 
     plt.tight_layout(w_pad=3.3)
@@ -129,16 +119,14 @@ def plot_unknown():
             for sets in range(1, 6):
                 y_true = np.array(
                     pd.read_csv(
-                        "5-fold_sets/Discretized/Sets{}/y_test".format(sets),
+                        f"5-fold_sets/Discretized/Sets{sets}/y_test",
                         header=None,
                         squeeze=True,
                     )
                 )
                 y_pred = list(
                     np.load(
-                        "5-fold_sets/Results_removing{}/Sets{}/{}_predicted.npy".format(
-                            removed, sets, alg
-                        ),
+                        "5-fold_sets/Results_removing{}/Sets{}/{}_predicted.npy".format(removed, sets, alg),
                         allow_pickle=True,
                     )
                 )
@@ -159,18 +147,9 @@ def plot_unknown():
 
                 normal_percent.append(float(normal_predicted / len(unknown_predicted)))
                 others_percent.append(
-                    float(
-                        (
-                            len(unknown_predicted)
-                            - normal_predicted
-                            - suspicious_predicted
-                        )
-                        / len(unknown_predicted)
-                    )
+                    float((len(unknown_predicted) - normal_predicted - suspicious_predicted) / len(unknown_predicted))
                 )
-                suspicious_percent.append(
-                    float(suspicious_predicted / len(unknown_predicted))
-                )
+                suspicious_percent.append(float(suspicious_predicted / len(unknown_predicted)))
 
             if alg != "EFC":
                 removed_metrics.append(
@@ -189,8 +168,7 @@ def plot_unknown():
                         mean(others_percent),
                         (stdev(others_percent) / sqrt(len(others_percent))) * 1.96,
                         mean(suspicious_percent),
-                        (stdev(suspicious_percent) / sqrt(len(suspicious_percent)))
-                        * 1.96,
+                        (stdev(suspicious_percent) / sqrt(len(suspicious_percent))) * 1.96,
                     ]
                 )
 

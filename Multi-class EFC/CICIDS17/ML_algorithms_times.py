@@ -1,83 +1,83 @@
-import pandas as pd
+import os
+import resource
+import sys
+import time
+
 import numpy as np
+import pandas as pd
+from classification_functions import *
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-import sys
+
 sys.path.append("../../../EFC")
-from classification_functions import *
-import os
-import time
-import resource
 
 
 def DT(sets):
-    train = pd.read_csv("TimeData/Normalized/Size{}/X_train".format(sets), header=None)
-    test = pd.read_csv("TimeData/Normalized/Size{}/X_test".format(sets), header=None)
-    train_labels = pd.read_csv("TimeData/Normalized/Size{}/y_train".format(sets), header=None).squeeze()
+    train = pd.read_csv(f"TimeData/Normalized/Size{sets}/X_train", header=None)
+    test = pd.read_csv(f"TimeData/Normalized/Size{sets}/X_test", header=None)
+    train_labels = pd.read_csv(f"TimeData/Normalized/Size{sets}/y_train", header=None).squeeze()
 
     DT = DecisionTreeClassifier()
     start = time.time()
     DT.fit(train, train_labels)
-    training_time = time.time()-start
-
+    training_time = time.time() - start
 
     start = time.time()
     predicted = DT.predict(test)
-    testing_time = time.time()-start
+    testing_time = time.time() - start
     print("DT train:", training_time)
     print("DT test:", testing_time)
-    np.save("TimeData/Results/Size{}/DT_times.npy".format(sets), [training_time, testing_time])
+    np.save(f"TimeData/Results/Size{sets}/DT_times.npy", [training_time, testing_time])
 
 
 def svc(sets):
-    train = pd.read_csv("TimeData/Normalized/Size{}/X_train".format(sets), header=None)
-    test = pd.read_csv("TimeData/Normalized/Size{}/X_test".format(sets), header=None)
-    train_labels = pd.read_csv("TimeData/Normalized/Size{}/y_train".format(sets), header=None).squeeze()
+    train = pd.read_csv(f"TimeData/Normalized/Size{sets}/X_train", header=None)
+    test = pd.read_csv(f"TimeData/Normalized/Size{sets}/X_test", header=None)
+    train_labels = pd.read_csv(f"TimeData/Normalized/Size{sets}/y_train", header=None).squeeze()
 
-
-    svc = SVC(kernel='poly', probability=True)
+    svc = SVC(kernel="poly", probability=True)
     start = time.time()
     svc.fit(train, train_labels)
-    training_time = time.time()-start
+    training_time = time.time() - start
 
     start = time.time()
     predicted = svc.predict(test)
-    testing_time = time.time()-start
+    testing_time = time.time() - start
     print("Train:", training_time)
     print("Test:", testing_time)
-    np.save("TimeData/Results/Size{}/SVC_times.npy".format(sets), [training_time, testing_time])
+    np.save(f"TimeData/Results/Size{sets}/SVC_times.npy", [training_time, testing_time])
+
 
 def mlp(sets):
-    train = pd.read_csv("TimeData/Normalized/Size{}/X_train".format(sets), header=None)
-    test = pd.read_csv("TimeData/Normalized/Size{}/X_test".format(sets), header=None)
-    train_labels = pd.read_csv("TimeData/Normalized/Size{}/y_train".format(sets), header=None).squeeze()
+    train = pd.read_csv(f"TimeData/Normalized/Size{sets}/X_train", header=None)
+    test = pd.read_csv(f"TimeData/Normalized/Size{sets}/X_test", header=None)
+    train_labels = pd.read_csv(f"TimeData/Normalized/Size{sets}/y_train", header=None).squeeze()
 
     MLP = MLPClassifier(max_iter=300)
     start = time.time()
     MLP.fit(train, train_labels)
-    training_time = time.time()-start
+    training_time = time.time() - start
 
     start = time.time()
     predicted = MLP.predict(test)
-    testing_time = time.time()-start
+    testing_time = time.time() - start
     print("Train:", training_time)
     print("Test:", testing_time)
-    np.save("TimeData/Results/Size{}/MLP_times.npy".format(sets), [training_time, testing_time])
+    np.save(f"TimeData/Results/Size{sets}/MLP_times.npy", [training_time, testing_time])
+
 
 def EFC(sets):
-    train = pd.read_csv("TimeData/Discretized/Size{}/X_train".format(sets), header=None).astype('int')
-    train_labels =  pd.read_csv("TimeData/Discretized/Size{}/y_train".format(sets), header=None).astype('int').squeeze()
-    test = pd.read_csv("TimeData/Discretized/Size{}/X_test".format(sets), header=None).astype('int')
-    test_labels = pd.read_csv("TimeData/Discretized/Size{}/y_test".format(sets), header=None).astype('int').squeeze()
+    train = pd.read_csv(f"TimeData/Discretized/Size{sets}/X_train", header=None).astype("int")
+    train_labels = pd.read_csv(f"TimeData/Discretized/Size{sets}/y_train", header=None).astype("int").squeeze()
+    test = pd.read_csv(f"TimeData/Discretized/Size{sets}/X_test", header=None).astype("int")
+    test_labels = pd.read_csv(f"TimeData/Discretized/Size{sets}/y_test", header=None).astype("int").squeeze()
 
     Q = 30
     LAMBDA = 0.5
 
     start = time.time()
-    h_i_matrices, coupling_matrices, cutoffs_list = MultiClassFit(
-        np.array(train), np.array(train_labels), Q, LAMBDA
-    )
+    h_i_matrices, coupling_matrices, cutoffs_list = MultiClassFit(np.array(train), np.array(train_labels), Q, LAMBDA)
     training_time = time.time() - start
     print("EFC train: ", training_time)
 
@@ -92,14 +92,15 @@ def EFC(sets):
     )
     testing_time = time.time() - start
     print("EFC test: ", testing_time)
-    np.save("TimeData/Results/Size{}/EFC_times.npy".format(sets), [training_time, testing_time])
+    np.save(f"TimeData/Results/Size{sets}/EFC_times.npy", [training_time, testing_time])
 
     print("Train:", training_time)
     print("Test:", testing_time)
 
+
 def main():
-    for size in [1,2,3,4]:
-        os.makedirs("TimeData/Results/Size{}/".format(size), exist_ok=True)
+    for size in [1, 2, 3, 4]:
+        os.makedirs(f"TimeData/Results/Size{size}/", exist_ok=True)
         EFC(size)
         DT(size)
         svc(size)
@@ -112,7 +113,7 @@ def memory_limit():
 
 
 def get_memory():
-    with open("/proc/meminfo", "r") as mem:
+    with open("/proc/meminfo") as mem:
         free_memory = 0
         for i in mem:
             sline = i.split()
