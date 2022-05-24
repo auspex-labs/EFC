@@ -9,7 +9,6 @@ known = [
     "labeld_FTP-Patator.csv",
 ]
 
-
 for path in known:
     data = pd.read_csv(f"Data/flow_labeled/{path}")
     data.drop(data.columns[0], inplace=True, axis=1)

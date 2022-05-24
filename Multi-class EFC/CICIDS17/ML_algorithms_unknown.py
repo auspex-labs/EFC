@@ -1,28 +1,25 @@
-import pandas as pd
+import itertools
+import sys
+import time
+from concurrent.futures import ProcessPoolExecutor
+
 import numpy as np
+import pandas as pd
+from classification_functions import *
+from sklearn.metrics import classification_report
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import classification_report
-import sys
 
 sys.path.append("../../../EFC")
-from classification_functions import *
-import time
-from concurrent.futures import ProcessPoolExecutor
-import itertools
 
 
 def svc(args):
     removed, sets = args
     print("SVC", removed, sets)
-    train = pd.read_csv(
-        "5-fold_sets/Normalized/Sets{}/X_train".format(sets), header=None
-    )
-    train_labels = pd.read_csv(
-        "5-fold_sets/Normalized/Sets{}/y_train".format(sets), header=None, squeeze=True
-    ).squeeze()
-    test = pd.read_csv("5-fold_sets/Normalized/Sets{}/X_test".format(sets), header=None)
+    train = pd.read_csv(f"5-fold_sets/Normalized/Sets{sets}/X_train", header=None)
+    train_labels = pd.read_csv(f"5-fold_sets/Normalized/Sets{sets}/y_train", header=None, squeeze=True).squeeze()
+    test = pd.read_csv(f"5-fold_sets/Normalized/Sets{sets}/X_test", header=None)
 
     valid_indexes = np.where(train_labels == removed)[0]
     train.drop(valid_indexes, axis=0, inplace=True)
@@ -50,13 +47,9 @@ def svc(args):
 def mlp(args):
     removed, sets = args
     print("MLP", removed, sets)
-    train = pd.read_csv(
-        "5-fold_sets/Normalized/Sets{}/X_train".format(sets), header=None
-    )
-    train_labels = pd.read_csv(
-        "5-fold_sets/Normalized/Sets{}/y_train".format(sets), header=None
-    ).squeeze()
-    test = pd.read_csv("5-fold_sets/Normalized/Sets{}/X_test".format(sets), header=None)
+    train = pd.read_csv(f"5-fold_sets/Normalized/Sets{sets}/X_train", header=None)
+    train_labels = pd.read_csv(f"5-fold_sets/Normalized/Sets{sets}/y_train", header=None).squeeze()
+    test = pd.read_csv(f"5-fold_sets/Normalized/Sets{sets}/X_test", header=None)
 
     valid_indexes = np.where(train_labels == removed)[0]
     train.drop(valid_indexes, axis=0, inplace=True)
@@ -85,13 +78,9 @@ def mlp(args):
 def DT(args):
     removed, sets = args
     print("DT", removed, sets)
-    train = pd.read_csv(
-        "5-fold_sets/Normalized/Sets{}/X_train".format(sets), header=None
-    )
-    train_labels = pd.read_csv(
-        "5-fold_sets/Normalized/Sets{}/y_train".format(sets), header=None
-    ).squeeze()
-    test = pd.read_csv("5-fold_sets/Normalized/Sets{}/X_test".format(sets), header=None)
+    train = pd.read_csv(f"5-fold_sets/Normalized/Sets{sets}/X_train", header=None)
+    train_labels = pd.read_csv(f"5-fold_sets/Normalized/Sets{sets}/y_train", header=None).squeeze()
+    test = pd.read_csv(f"5-fold_sets/Normalized/Sets{sets}/X_test", header=None)
 
     valid_indexes = np.where(train_labels == removed)[0]
     train.drop(valid_indexes, axis=0, inplace=True)
@@ -119,18 +108,10 @@ def DT(args):
 def EFC(args):
     removed, sets = args
     print("EFC", removed, sets)
-    test = pd.read_csv(
-        "5-fold_sets/Discretized/Sets{}/X_test".format(sets), header=None
-    ).astype("int")
-    test_labels = pd.read_csv(
-        "5-fold_sets/Discretized/Sets{}/y_test".format(sets), squeeze=True, header=None
-    ).astype("int")
-    train = pd.read_csv(
-        "5-fold_sets/Discretized/Sets{}/X_train".format(sets), header=None
-    ).astype("int")
-    train_labels = pd.read_csv(
-        "5-fold_sets/Discretized/Sets{}/y_train".format(sets), squeeze=True, header=None
-    ).astype("int")
+    test = pd.read_csv(f"5-fold_sets/Discretized/Sets{sets}/X_test", header=None).astype("int")
+    test_labels = pd.read_csv(f"5-fold_sets/Discretized/Sets{sets}/y_test", squeeze=True, header=None).astype("int")
+    train = pd.read_csv(f"5-fold_sets/Discretized/Sets{sets}/X_train", header=None).astype("int")
+    train_labels = pd.read_csv(f"5-fold_sets/Discretized/Sets{sets}/y_train", squeeze=True, header=None).astype("int")
 
     valid_indexes = np.where(train_labels == removed)[0]
     train.drop(valid_indexes, axis=0, inplace=True)
@@ -140,9 +121,7 @@ def EFC(args):
     LAMBDA = 0.5
 
     start = time.time()
-    h_i_matrices, coupling_matrices, cutoffs_list = MultiClassFit(
-        np.array(train), np.array(train_labels), Q, LAMBDA
-    )
+    h_i_matrices, coupling_matrices, cutoffs_list = MultiClassFit(np.array(train), np.array(train_labels), Q, LAMBDA)
     train_time = time.time() - start
     start = time.time()
     predicted, energies = MultiClassPredict(

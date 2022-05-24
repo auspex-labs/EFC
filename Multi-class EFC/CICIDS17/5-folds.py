@@ -12,7 +12,7 @@ count = 1
 
 for train_index, test_index in skf.split(x, y):
     print(count)
-    data.iloc[train_index,:].to_csv("5-fold_sets/Raw/Sets{}/train.csv".format(count), mode='a', header=False, index=False)
-    data.iloc[test_index,:].to_csv("5-fold_sets/Raw/Sets{}/test.csv".format(count), mode='a', header=False, index=False)
+    data.iloc[train_index, :].to_csv(f"5-fold_sets/Raw/Sets{count}/train.csv", mode="a", header=False, index=False)
+    data.iloc[test_index, :].to_csv(f"5-fold_sets/Raw/Sets{count}/test.csv", mode="a", header=False, index=False)
 
-    count+=1
+    count += 1

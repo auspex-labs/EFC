@@ -1,11 +1,12 @@
-import pandas as pd
+import pickle
+import resource
 import sys
 
-sys.path.append("../../../EFC")
-from classification_functions import *
-import resource
 import numpy as np
-import pickle
+import pandas as pd
+from classification_functions import *
+
+sys.path.append("../../../EFC")
 
 
 def predict(folder, attacks):
@@ -51,7 +52,7 @@ def memory_limit():
 
 
 def get_memory():
-    with open("/proc/meminfo", "r") as mem:
+    with open("/proc/meminfo") as mem:
         free_memory = 0
         for i in mem:
             sline = i.split()

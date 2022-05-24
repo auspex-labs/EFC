@@ -14,7 +14,6 @@ unknown = [
     "labeld_SSH-Patator.csv",
 ]
 
-
 web_attacks = [
     "labeld_WebAttack-XSS.csv",
     "labeld_WebAttack-BruteForce.csv",

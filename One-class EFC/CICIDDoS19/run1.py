@@ -1,6 +1,6 @@
 import os
 
-#pre process and sampling
+# pre process and sampling
 os.mkdir("Reduced/")
 os.mkdir("Reduced/01-12/")
 os.mkdir("Reduced/03-11/")

@@ -1,11 +1,14 @@
+import concurrent.futures
+import itertools
+import multiprocessing
+import time
+
 import numpy as np
 from dca_functions import *
-import time
-import concurrent.futures
-import multiprocessing
-import itertools
-cimport numpy as np
+
 cimport cython
+cimport numpy as np
+
 import time
 
 DTYPE = np.int

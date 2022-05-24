@@ -8,6 +8,3 @@ To preprocess, discretize, sample and execute the experiments in CICIDS2017 fold
 performs training and testing of the algorithms removing one type of attack from training (one at a time), also in 5-fold cross-validation.
 
 To run the experiment in the Literature folder, where we compare EFC with other open-set methods like the one by Zhang et al, run the **exec.py** script.
-
-
-

@@ -1,14 +1,16 @@
-from genericpath import exists
-import pandas as pd
 import os
+import pickle
 import sys
-sys.path.append("../../../EFC")
-from classification_functions import *
+
 import numpy as np
-from sklearn.preprocessing import MaxAbsScaler, KBinsDiscretizer
+import pandas as pd
+from classification_functions import *
+from genericpath import exists
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-import pickle
+from sklearn.preprocessing import KBinsDiscretizer, MaxAbsScaler
+
+sys.path.append("../../../EFC")
 
 n_bins = 30
 pseudo = 0.5
@@ -38,9 +40,7 @@ preprocessor = ColumnTransformer(
 train = preprocessor.fit_transform(train).astype("int")
 print(np.unique(train[:, -1]))
 
-h_i_matrices, coupling_matrices, cutoffs_list = MultiClassFit(
-    train[:, :-1], train[:, -1], n_bins, pseudo
-)
+h_i_matrices, coupling_matrices, cutoffs_list = MultiClassFit(train[:, :-1], train[:, -1], n_bins, pseudo)
 
 np.save(f"{folder}/Models/h_i.npy", h_i_matrices)
 np.save(f"{folder}/Models/couplings.npy", coupling_matrices)
